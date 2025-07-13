@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: linear-gradient(to right, #232f3e, #3b4d63);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8em;
+      animation: fadeInDown 0.5s ease-in-out;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ffc107;
+      color: black;
+      padding: 8px 14px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: #e0a800;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 30px 20px;
+      animation: fadeInUp 0.6s ease-in-out;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .add-btn, .stats-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 12px 20px;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .add-btn {
+      background-color: #28a745;
+    }
+
+    .add-btn:hover {
+      background-color: #218838;
+      transform: scale(1.05);
+    }
+
+    .stats-btn {
+      background-color: #17a2b8;
+      margin-left: 10px;
+    }
+
+    .stats-btn:hover {
+      background-color: #138496;
+      transform: scale(1.05);
+    }
+
+    .filters {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e1e1e1;
+    }
+
+    th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    td img {
+      width: 60px;
+      height: auto;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+
+    td img:hover {
+      transform: scale(1.1);
+    }
+
+    .action-btn {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .edit-btn {
+      background-color: #007bff;
+    }
+
+    .edit-btn:hover {
+      background-color: #0069d9;
+      transform: translateY(-1px);
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      margin-left: 8px;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+      transform: translateY(-1px);
+    }
+
+    footer {
+      margin-top: 40px;
+      background-color: #232f3e;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .filters {
+        flex-direction: column;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      td {
+        position: relative;
+        padding-left: 50%;
+        margin-bottom: 15px;
+        background: white;
+        border-bottom: 1px solid #ccc;
+      }
+
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        top: 12px;
+        font-weight: bold;
+        color: #666;
+      }
+
+      .logout-btn {
+        position: static;
+        margin: 10px auto;
+        width: 90%;
+        display: block;
+        text-align: center;
+      }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Admin Dashboard</h1>
+  <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+</header>
+
+<div class="container">
+  <h2>Manage Products</h2>
+
+  <a href="{{ url_for('add_product') }}" class="add-btn">+ Add New Product</a>
+  <a href="{{ url_for('product_stats') }}" class="stats-btn">📊 View Stats</a>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input type="text" id="searchInput" placeholder="Search by title...">
+    <select id="categoryFilter">
+      <option value="all">All Categories</option>
+      {% for cat in products | map(attribute='category') | unique %}
+        <option value="{{ cat }}">{{ cat }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Product Table -->
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Image</th>
+        <th>Title</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+        <tr data-title="{{ product.title | lower }}" data-category="{{ product.category }}">
+          <td data-label="ID">{{ product.id }}</td>
+          <td data-label="Image"><img src="{{ product.image }}" alt="Product Image"></td>
+          <td data-label="Title">{{ product.title }}</td>
+          <td data-label="Price">{{ product.price }}</td>
+          <td data-label="Category">{{ product.category }}</td>
+          <td data-label="Actions">
+            <a href="{{ url_for('edit_product', product_id=product.id) }}" class="action-btn edit-btn">Edit</a>
+            <a href="{{ url_for('delete_product', product_id=product.id) }}" class="action-btn delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <p>&copy; 2025 MyAffiliateSite | All rights reserved.</p>
+</footer>
+
+<script>
+  const searchInput = document.getElementById("searchInput");
+  const categoryFilter = document.getElementById("categoryFilter");
+  const rows = document.querySelectorAll("#productTable tbody tr");
+
+  function filterTable() {
+    const searchValue = searchInput.value.toLowerCase();
+    const selectedCategory = categoryFilter.value;
+
+    rows.forEach(row => {
+      const title = row.getAttribute("data-title");
+      const category = row.getAttribute("data-category");
+
+      const matchesSearch = title.includes(searchValue);
+      const matchesCategory = selectedCategory === "all" || category === selectedCategory;
+
+      row.style.display = (matchesSearch && matchesCategory) ? "table-row" : "none";
+    });
+  }
+
+  searchInput.addEventListener("input", filterTable);
+  categoryFilter.addEventListener("change", filterTable);
+</script>
+
+</body>
+</html>

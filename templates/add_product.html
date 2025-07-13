@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add New Product</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px #ccc;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .link-input-group {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    #amazonUrl {
+      flex: 1;
+    }
+
+    button, #fetch-btn {
+      margin-top: 20px;
+      background: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #fetch-btn {
+      background: #007bff;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      .link-input-group {
+        flex-direction: column;
+      }
+
+      #fetch-btn {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Add New Product</h2>
+
+    <form method="POST">
+      <label>Amazon Affiliate Link:</label>
+      <div class="link-input-group">
+        <input type="text" id="amazonUrl" placeholder="Paste full Amazon link with ?tag=">
+        <button type="button" id="fetch-btn" onclick="fetchProduct()">Fetch Info</button>
+      </div>
+
+      <label>Product Title:</label>
+      <input type="text" name="title" required>
+
+      <label>Image URL:</label>
+      <input type="text" name="image" required>
+
+      <label>Price:</label>
+      <input type="text" name="price" required>
+
+      <label>Category:</label>
+      <input type="text" name="category" required>
+
+      <label>Amazon Affiliate Link (will be auto-filled):</label>
+      <input type="text" name="affiliate_link" required>
+
+      <button type="submit">Add Product</button>
+    </form>
+
+    <a href="{{ url_for('admin_dashboard') }}" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    async function fetchProduct() {
+      const url = document.getElementById('amazonUrl').value.trim();
+      if (!url || !url.includes('amazon')) {
+        alert("Please paste a valid Amazon product link.");
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/fetch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          alert("Error fetching product details: " + data.error);
+        } else {
+          document.querySelector('input[name="title"]').value = data.title || '';
+          document.querySelector('input[name="image"]').value = data.image || '';
+          document.querySelector('input[name="price"]').value = data.price || '';
+          document.querySelector('input[name="affiliate_link"]').value = url;
+        }
+      } catch (err) {
+        alert("Something went wrong. Try again.");
+      }
+    }
+  </script>
+</body>
+</html>
