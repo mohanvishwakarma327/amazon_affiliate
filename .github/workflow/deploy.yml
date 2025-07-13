@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd amazon_affiliate || git clone https://github.com/mohanvishwakarma327/amazon_affiliate.git
+          cd amazon_affiliate
+          git pull origin main
+          docker build -t affiliate-app .
+          docker stop $(docker ps -q --filter "ancestor=affiliate-app") || true
+          docker run -d -p 80:5000 affiliate-app
